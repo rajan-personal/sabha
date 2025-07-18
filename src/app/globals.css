@@ -4,9 +4,6 @@
 :root {
   --background: var(--sabha-bg-primary);
   --foreground: var(--sabha-text-primary);
-}
-
-@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
