@@ -45,3 +45,62 @@ export const verification = pgTable("verification", {
 	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()),
 	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date())
 });
+
+export const category = pgTable("category", {
+	id: text('id').primaryKey(),
+	name: text('name').notNull(),
+	description: text('description'),
+	color: text('color'),
+	icon: text('icon'),
+	isActive: boolean('is_active').$defaultFn(() => true).notNull(),
+	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
+});
+
+export const topic = pgTable("topic", {
+	id: text('id').primaryKey(),
+	title: text('title').notNull(),
+	content: text('content').notNull(),
+	authorId: text('author_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+	categoryId: text('category_id').references(() => category.id),
+	upvotes: integer('upvotes').$defaultFn(() => 0).notNull(),
+	downvotes: integer('downvotes').$defaultFn(() => 0).notNull(),
+	commentCount: integer('comment_count').$defaultFn(() => 0).notNull(),
+	viewCount: integer('view_count').$defaultFn(() => 0).notNull(),
+	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
+});
+
+export const comment = pgTable("comment", {
+	id: text('id').primaryKey(),
+	content: text('content').notNull(),
+	authorId: text('author_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+	topicId: text('topic_id').notNull().references(() => topic.id, { onDelete: 'cascade' }),
+	parentId: text('parent_id'), // for nested comments
+	upvotes: integer('upvotes').$defaultFn(() => 0).notNull(),
+	downvotes: integer('downvotes').$defaultFn(() => 0).notNull(),
+	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
+});
+
+export const vote = pgTable("vote", {
+	id: text('id').primaryKey(),
+	userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+	topicId: text('topic_id').references(() => topic.id, { onDelete: 'cascade' }),
+	commentId: text('comment_id').references(() => comment.id, { onDelete: 'cascade' }),
+	type: text('type').notNull(), // 'upvote' or 'downvote'
+	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
+});
+
+export const userProfile = pgTable("user_profile", {
+	id: text('id').primaryKey(),
+	userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+	bio: text('bio'),
+	location: text('location'),
+	website: text('website'),
+	totalTopics: integer('total_topics').$defaultFn(() => 0).notNull(),
+	totalComments: integer('total_comments').$defaultFn(() => 0).notNull(),
+	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
+});

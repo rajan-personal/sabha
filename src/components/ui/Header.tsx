@@ -48,28 +48,54 @@ export function Header() {
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
-              <Link 
-                href="/dashboard"
-                style={{
-                  backgroundColor: 'var(--sabha-primary-600)',
-                  color: 'var(--sabha-text-inverse)',
-                  padding: 'var(--sabha-spacing-sm) var(--sabha-spacing-md)',
-                  borderRadius: 'var(--sabha-radius-lg)',
-                  fontWeight: '500',
-                  textDecoration: 'none',
-                  fontSize: '0.875rem',
-                  transition: 'var(--sabha-transition-fast)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--sabha-primary-700)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--sabha-primary-600)';
-                }}
-              >
-                Dashboard
-              </Link>
+            <div className="flex items-center gap-3">
+              {/* Main Navigation */}
+              <div className="flex items-center gap-2">
+                <Link 
+                  href="/dashboard"
+                  style={{
+                    backgroundColor: 'var(--sabha-primary-600)',
+                    color: 'var(--sabha-text-inverse)',
+                    padding: 'var(--sabha-spacing-sm) var(--sabha-spacing-md)',
+                    borderRadius: 'var(--sabha-radius-lg)',
+                    fontWeight: '500',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    transition: 'var(--sabha-transition-fast)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--sabha-primary-700)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--sabha-primary-600)';
+                  }}
+                >
+                  📋 Topics
+                </Link>
+                <Link 
+                  href="/profile"
+                  style={{
+                    backgroundColor: 'var(--sabha-accent-600)',
+                    color: 'var(--sabha-text-inverse)',
+                    padding: 'var(--sabha-spacing-sm) var(--sabha-spacing-md)',
+                    borderRadius: 'var(--sabha-radius-lg)',
+                    fontWeight: '500',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    transition: 'var(--sabha-transition-fast)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--sabha-accent-700)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--sabha-accent-600)';
+                  }}
+                >
+                  👤 Profile
+                </Link>
+              </div>
+              
+              {/* Logout Button */}
               <LogoutButton />
             </div>
           </>
