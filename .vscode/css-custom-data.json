@@ -1,0 +1,178 @@
+{
+  "version": 1.1,
+  "properties": [
+    {
+      "name": "--sabha-primary-50",
+      "description": "Sabha primary color - lightest shade (#eff6ff)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-primary-100",
+      "description": "Sabha primary color - very light (#dbeafe)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-primary-500",
+      "description": "Sabha primary color - medium (#3b82f6)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-primary-600",
+      "description": "Sabha primary color - main brand color (#2563eb)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-primary-700",
+      "description": "Sabha primary color - darker shade (#1d4ed8)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-text-primary",
+      "description": "Sabha primary text color - darkest (#111827)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-text-secondary",
+      "description": "Sabha secondary text color - medium (#374151)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-text-tertiary",
+      "description": "Sabha tertiary text color - lighter (#6b7280)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-text-inverse",
+      "description": "Sabha inverse text color - for dark backgrounds (#ffffff)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-bg-primary",
+      "description": "Sabha primary background color - white (#ffffff)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-bg-secondary",
+      "description": "Sabha secondary background color - very light gray (#f9fafb)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-bg-gradient",
+      "description": "Sabha gradient background - subtle blue to white gradient",
+      "syntax": "<image>"
+    },
+    {
+      "name": "--sabha-border-primary",
+      "description": "Sabha primary border color - light gray (#e5e7eb)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-success-50",
+      "description": "Sabha success color - lightest green (#f0fdf4)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-success-600",
+      "description": "Sabha success color - main green (#16a34a)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-accent-50",
+      "description": "Sabha accent color - lightest purple (#faf5ff)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-accent-600",
+      "description": "Sabha accent color - main purple (#9333ea)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-shadow-sm",
+      "description": "Sabha small shadow - subtle drop shadow",
+      "syntax": "<shadow>"
+    },
+    {
+      "name": "--sabha-spacing-xs",
+      "description": "Sabha extra small spacing - 0.25rem",
+      "syntax": "<length>"
+    },
+    {
+      "name": "--sabha-spacing-sm",
+      "description": "Sabha small spacing - 0.5rem",
+      "syntax": "<length>"
+    },
+    {
+      "name": "--sabha-spacing-md",
+      "description": "Sabha medium spacing - 1rem",
+      "syntax": "<length>"
+    },
+    {
+      "name": "--sabha-spacing-lg",
+      "description": "Sabha large spacing - 1.5rem",
+      "syntax": "<length>"
+    },
+    {
+      "name": "--sabha-spacing-xl",
+      "description": "Sabha extra large spacing - 2rem",
+      "syntax": "<length>"
+    },
+    {
+      "name": "--sabha-spacing-2xl",
+      "description": "Sabha 2x extra large spacing - 3rem",
+      "syntax": "<length>"
+    },
+    {
+      "name": "--sabha-radius-lg",
+      "description": "Sabha large border radius - 0.5rem",
+      "syntax": "<length>"
+    },
+    {
+      "name": "--sabha-transition-fast",
+      "description": "Sabha fast transition - 150ms ease-in-out",
+      "syntax": "<time>"
+    },
+    {
+      "name": "--sabha-transition-normal",
+      "description": "Sabha normal transition - 250ms ease-in-out",
+      "syntax": "<time>"
+    },
+    {
+      "name": "--sabha-transition-slow",
+      "description": "Sabha slow transition - 350ms ease-in-out",
+      "syntax": "<time>"
+    },
+    {
+      "name": "--sabha-google-blue",
+      "description": "Google brand blue color (#4285F4)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-google-green",
+      "description": "Google brand green color (#34A853)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-google-yellow",
+      "description": "Google brand yellow color (#FBBC05)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-google-red",
+      "description": "Google brand red color (#EA4335)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-dark-bg",
+      "description": "Sabha dark mode background color (#0a0a0a)",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--sabha-dark-text",
+      "description": "Sabha dark mode text color (#ededed)",
+      "syntax": "<color>"
+    }
+  ],
+  "atDirectives": [],
+  "pseudoClasses": [],
+  "pseudoElements": []
+}

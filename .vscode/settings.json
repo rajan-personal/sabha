@@ -1,0 +1,31 @@
+{
+  "css.customData": [".vscode/css-custom-data.json"],
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "css.validate": true,
+  "css.lint.unknownProperties": "ignore",
+  "files.associations": {
+    "*.css": "css"
+  },
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": "variable.other.property.css",
+        "settings": {
+          "foreground": "#9333EA"
+        }
+      },
+      {
+        "scope": "support.type.property-name.css",
+        "settings": {
+          "foreground": "#2563EB"
+        }
+      }
+    ]
+  }
+}
