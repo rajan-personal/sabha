@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@better-fetch/fetch": "^1.1.18",
     "@neondatabase/serverless": "^1.0.1",
+    "better-auth": "^1.2.12",
     "dotenv": "^17.2.0",
     "drizzle-orm": "^0.44.3",
     "next": "15.4.1",
