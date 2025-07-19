@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.18",
+    "@google/generative-ai": "^0.24.1",
     "@neondatabase/serverless": "^1.0.1",
     "better-auth": "^1.2.12",
     "dotenv": "^17.2.0",

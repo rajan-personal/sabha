@@ -30,6 +30,7 @@ function CreateTopicForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState<{id: string, name: string, color: string}[]>([]);
+  const [isEnhancing, setIsEnhancing] = useState(false);
 
   // Fetch categories from API
   useEffect(() => {
@@ -90,6 +91,45 @@ function CreateTopicForm() {
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleEnhanceContent = async () => {
+    if (!formData.title) {
+      alert('Please provide a title before using AI Refine');
+      return;
+    }
+
+    setIsEnhancing(true);
+    try {
+      const selectedCategory = categories.find(cat => cat.id === formData.categoryId);
+      const response = await fetch('/api/ai/enhance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          content: formData.content || '', // Allow empty content
+          category: selectedCategory?.name || 'General',
+          action: 'enhance'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to enhance content');
+      }
+
+      const data = await response.json();
+      setFormData(prev => ({
+        ...prev,
+        content: data.enhancedContent
+      }));
+    } catch (error) {
+      console.error('Error enhancing content:', error);
+      alert('Failed to enhance content. Please try again.');
+    } finally {
+      setIsEnhancing(false);
+    }
   };
 
   return (
@@ -200,15 +240,63 @@ function CreateTopicForm() {
 
           {/* Content */}
           <div>
-            <label style={{
-              display: 'block',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: 'var(--sabha-text-primary)',
-              marginBottom: 'var(--sabha-spacing-sm)'
-            }}>
-              Content *
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label style={{
+                display: 'block',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: 'var(--sabha-text-primary)'
+              }}>
+                Content *
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleEnhanceContent}
+                  disabled={isEnhancing || !formData.title}
+                  style={{
+                    padding: 'var(--sabha-spacing-sm) var(--sabha-spacing-md)',
+                    borderRadius: 'var(--sabha-radius-md)',
+                    border: '1px solid var(--sabha-primary-500)',
+                    backgroundColor: 'var(--sabha-bg-primary)',
+                    color: 'var(--sabha-primary-600)',
+                    fontSize: '0.75rem',
+                    fontWeight: '500',
+                    cursor: isEnhancing || !formData.title ? 'not-allowed' : 'pointer',
+                    transition: 'var(--sabha-transition-fast)',
+                    opacity: isEnhancing || !formData.title ? 0.5 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.25rem'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isEnhancing && formData.title) {
+                      e.currentTarget.style.backgroundColor = 'var(--sabha-primary-50)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--sabha-bg-primary)';
+                  }}
+                >
+                  {isEnhancing ? (
+                    <>
+                      <svg style={{ width: '0.875rem', height: '0.875rem' }} className="animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Refining...
+                    </>
+                  ) : (
+                    <>
+                      <svg style={{ width: '0.875rem', height: '0.875rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      AI Refine
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
             <textarea
               required
               value={formData.content}
@@ -381,9 +469,13 @@ function CreateTopicForm() {
             <span style={{ color: 'var(--sabha-secondary-500)', fontSize: '0.75rem', marginTop: '0.1rem' }}>•</span>
             Include relevant details and context
           </li>
-          <li style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--sabha-spacing-sm)' }}>
+          <li style={{ marginBottom: 'var(--sabha-spacing-sm)', display: 'flex', alignItems: 'flex-start', gap: 'var(--sabha-spacing-sm)' }}>
             <span style={{ color: 'var(--sabha-secondary-500)', fontSize: '0.75rem', marginTop: '0.1rem' }}>•</span>
             Format your content with proper paragraphs
+          </li>
+          <li style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--sabha-spacing-sm)' }}>
+            <span style={{ color: 'var(--sabha-secondary-500)', fontSize: '0.75rem', marginTop: '0.1rem' }}>•</span>
+            Use "AI Refine" to generate or improve content from your title
           </li>
         </ul>
       </div>

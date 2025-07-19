@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { topic, user, category } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
-import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 
 // GET /api/topics - Fetch all topics
 export async function GET(request: NextRequest) {
@@ -48,13 +48,12 @@ export async function GET(request: NextRequest) {
 // POST /api/topics - Create a new topic
 export async function POST(request: NextRequest) {
   try {
-    // Get the session from the auth headers
-    const headersList = await headers();
-    
-    // For now, let's simplify and just check if we have a session cookie
-    // In a real app, you would properly validate the session with better-auth
-    const cookieHeader = headersList.get('cookie');
-    if (!cookieHeader || !cookieHeader.includes('better-auth.session_token')) {
+    // Get the session using Better Auth
+    const session = await auth.api.getSession({
+      headers: request.headers
+    });
+
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -65,8 +64,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Title and content are required' }, { status: 400 });
     }
 
-    // For now, use a placeholder user ID - in production, get this from the session
-    const userId = 'placeholder-user-id'; // TODO: Get from proper session validation
+    // Use the authenticated user's ID
+    const userId = session.user.id;
 
     // Create the topic
     const newTopic = await db.insert(topic).values({
