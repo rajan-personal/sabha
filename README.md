@@ -1,176 +1,254 @@
-# Sabha - Modern Authentication Web App
+# Sabha - AI-Powered Democratic Discussion Platform
 
-A modern web application built with Next.js, Better Auth, and Drizzle ORM. Features Google OAuth authentication, protected routes, and a centralized design system.
+**Team Sabha** is creating an AI debating/discussion platform that transforms how policy-making works in the digital age.
 
-## 🚀 Features
+**Live Demo:** [https://sabha-delta.vercel.app/](https://sabha-delta.vercel.app/)
 
-- **Modern Authentication**: Google OAuth integration with Better Auth
-- **Protected Routes**: Secure dashboard and authentication middleware
-- **Centralized Design System**: Consistent colors and spacing via CSS variables
-- **VS Code Integration**: Full autocomplete and documentation for design tokens
-- **TypeScript Support**: Full type safety with design system utilities
-- **Responsive Design**: Mobile-friendly UI with modern aesthetics
+---
 
-## 🛠️ Tech Stack
+## About Team Sabha
 
-- **Frontend**: Next.js 15, React, TypeScript
-- **Authentication**: Better Auth with Google OAuth
-- **Database**: Drizzle ORM (SQLite/PostgreSQL)
-- **Styling**: CSS Variables, Tailwind CSS
-- **Development**: VS Code integration with custom autocomplete
+We are Team Sabha, building an AI-powered discussion platform that reimagines democratic participation. Our mission is to move beyond the traditional representative model that has dominated policy-making for centuries.
 
-## 📦 Getting Started
+## The Problem We're Solving
 
-1. **Clone the repository**:
+### Traditional Parliamentary System is Inefficient
+
+Policy making has been done using the representative model for a really long time. It doesn't have to be the same in the era of tech and AI.
+
+**Current Model:**
+- In parliament, 500 people gather
+- One person speaks while everybody else listens
+- This model wastes countless human hours with inefficient communication
+- Only elected representatives can participate in policy discussions
+- Geographic barriers prevent broader participation
+
+### Why This Matters
+
+This traditional approach creates several critical issues:
+- **Massive inefficiency**: One-to-many communication wastes human resources
+- **Limited representation**: Only a small group can contribute to important decisions
+- **Information overload**: Decision-makers struggle to process all input
+- **Repetitive discussions**: Same points are made repeatedly without progress
+- **Geographic exclusion**: Physical presence requirements limit participation
+
+## Our Solution: Sabha Platform
+
+We have created a forum where **not only representatives, but the whole country can participate**. This is possible because AI can:
+
+- **Identify content type**: Determine if a comment is fact or opinion
+- **Detect repetition**: Flag when arguments are being repeated
+- **Organize discussions**: Sort comments into relevant threads
+- **Act as intelligent moderator**: Maintain quality and relevance
+
+### How AI Transforms Democratic Discourse
+
+Our AI moderator provides:
+
+1. **Content Classification**
+   - Automatically identifies facts vs opinions
+   - Labels comments for easy understanding
+   - Helps readers distinguish between data and personal views
+
+2. **Intelligent Organization**
+   - Groups related comments into threads
+   - Prevents important points from getting lost
+   - Creates structured discussions instead of chaos
+
+3. **Quality Control**
+   - Filters out repetitive content
+   - Promotes constructive contributions
+   - Maintains discussion relevance
+
+4. **Real-time Analytics**
+   - Shows discussion sentiment and trends
+   - Identifies key themes and concerns
+   - Provides data-driven insights for decision-makers
+
+## Key Features
+
+### For Citizens
+- **Direct Participation**: Contribute to policy discussions regardless of location
+- **AI-Enhanced Comments**: Get suggestions to improve your contributions
+- **Fact-Opinion Clarity**: Understand the nature of different viewpoints
+- **Organized Discussions**: Follow relevant threads easily
+
+### For Policymakers
+- **Structured Input**: Receive organized, filtered public opinion
+- **Quality Insights**: Access meaningful feedback without noise
+- **Data-Driven Decisions**: Use analytics to understand public sentiment
+- **Efficient Process**: Save time with AI-summarized discussions
+
+### For Everyone
+- **Transparent Process**: All AI decisions are explainable
+- **Inclusive Platform**: Geographic barriers removed
+- **Quality Discourse**: Focus on constructive contributions
+- **Democratic Innovation**: Experience the future of civic participation
+
+## Technology Stack
+
+### Frontend
+- Next.js 15 with App Router
+- React 19 with TypeScript
+- Responsive design for all devices
+
+### AI Integration
+- Google Gemini 2.5 Flash for intelligent content analysis
+- Natural Language Processing for fact/opinion detection
+- Real-time sentiment analysis and content classification
+
+### Backend
+- PostgreSQL database with Drizzle ORM
+- Better Auth with Google OAuth integration
+- RESTful API for all platform features
+
+### Deployment
+- Vercel platform with global CDN
+- Continuous deployment from GitHub
+- Scalable infrastructure
+
+## How It Works
+
+1. **Topic Creation**: Users create discussion topics on policy issues
+2. **AI Enhancement**: Platform suggests improvements and categorizes content
+3. **Community Participation**: Citizens contribute comments and responses
+4. **AI Moderation**: System classifies content, organizes threads, prevents repetition
+5. **Analytics Generation**: Real-time insights on discussion quality and sentiment
+6. **Structured Output**: Policymakers receive organized, actionable feedback
+
+## Development Setup
+
+### Prerequisites
+- Node.js 18+
+- PostgreSQL database
+- Google OAuth credentials
+- Google Gemini API key
+
+### Quick Start
 ```bash
-git clone <repository-url>
+# Clone the repository
+git clone https://github.com/your-username/sabha.git
 cd sabha
-```
 
-2. **Install dependencies**:
-```bash
+# Install dependencies
 npm install
-# or
-yarn install
-# or
-pnpm install
-```
 
-3. **Set up environment variables**:
-```bash
-# Copy the example env file
+# Set up environment variables
 cp .env.example .env.local
-
-# Add your Google OAuth credentials
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-BETTER_AUTH_SECRET=your_random_secret_key
 ```
 
-4. **Run the development server**:
+### Environment Configuration
+```env
+# Google OAuth
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_secret
+
+# Authentication
+BETTER_AUTH_SECRET=your_secret_key
+BETTER_AUTH_URL=http://localhost:3000
+
+# Database
+DATABASE_URL=your_postgresql_url
+
+# AI Service
+GEMINI_API_KEY=your_gemini_key
+```
+
+### Run the Application
 ```bash
+# Initialize database
+npm run db:reset
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+
+# Visit http://localhost:3000
 ```
 
-5. **Open [http://localhost:3000](http://localhost:3000)** in your browser
+## API Examples
 
-## 🎨 Design System
+### Analyze Comment Content
+```javascript
+POST /api/ai/comments
+{
+  "action": "analyze",
+  "comment": "According to recent studies, renewable energy costs have decreased by 40%",
+  "topicId": "energy-policy"
+}
 
-This project features a comprehensive design system with centralized color management:
-
-### Key Features:
-- **Centralized Colors**: All colors managed via CSS custom properties
-- **VS Code Integration**: Full autocomplete and documentation
-- **TypeScript Support**: Type-safe design system utilities
-- **Consistent Spacing**: Standardized spacing and radius values
-- **Semantic Colors**: Meaningful color names (primary, secondary, success, etc.)
-
-### Usage Example:
-```tsx
-// Using CSS variables directly
-<div style={{ 
-  backgroundColor: 'var(--sabha-primary-600)', 
-  color: 'var(--sabha-text-inverse)' 
-}}>
-  Content
-</div>
-
-// Using TypeScript utilities
-import { sabhaColors, sabhaSpacing } from '@/styles/design-system.utils';
-
-<div style={{ 
-  backgroundColor: sabhaColors.primary[600], 
-  padding: sabhaSpacing.lg 
-}}>
-  Content
-</div>
+Response:
+{
+  "classification": "fact",
+  "relevanceScore": 95,
+  "suggestions": ["Consider adding source citation"],
+  "reasoning": "Statement contains verifiable data about renewable energy"
+}
 ```
 
-### Design System Files:
-- `src/styles/design-system.css` - Main color definitions
-- `src/styles/design-system.types.ts` - TypeScript types
-- `src/styles/design-system.utils.ts` - Utility functions
-- `.vscode/css-custom-data.json` - VS Code autocomplete
-- `docs/DESIGN_SYSTEM.md` - Complete documentation
+### Get Discussion Insights
+```javascript
+POST /api/ai/comments
+{
+  "action": "analyze-discussion",
+  "topicId": "healthcare-reform"
+}
 
-## 🔐 Authentication
+Response:
+{
+  "sentiment": "mixed",
+  "factOpinionRatio": { "facts": 60, "opinions": 40 },
+  "keyThemes": ["cost reduction", "accessibility", "quality care"],
+  "engagementLevel": "high"
+}
+```
 
-The app uses Better Auth with Google OAuth:
-
-- **Google Sign-In**: Available on homepage - One-click OAuth authentication
-- **Dashboard**: `/dashboard` - Protected route for authenticated users
-- **Logout**: Available from dashboard header
-- **Session Management**: Automatic session handling with middleware
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 sabha/
 ├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── dashboard/         # Protected dashboard
-│   │   └── api/auth/          # Better Auth API routes
+│   ├── app/                    # Next.js pages and API routes
+│   │   ├── api/ai/            # AI-powered endpoints
+│   │   ├── topic/[id]/        # Individual topic pages
+│   │   ├── create-topic/      # Topic creation interface
+│   │   └── dashboard/         # User dashboard
 │   ├── components/            # React components
-│   │   └── auth/             # Authentication components
-│   ├── db/                   # Database schema and config
-│   ├── lib/                  # Utility libraries
-│   └── styles/               # Design system files
-├── .vscode/                  # VS Code configuration
+│   │   ├── ai/               # AI-powered components
+│   │   ├── forum/            # Discussion components
+│   │   └── ui/               # User interface components
+│   ├── lib/                  # Utility functions and configurations
+│   ├── db/                   # Database schema and operations
+│   └── styles/               # Design system and CSS
 ├── docs/                     # Documentation
-└── middleware.ts             # Route protection
+└── public/                   # Static assets
 ```
 
-## 🎯 Available Scripts
+## Contributing
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run type-check` - Run TypeScript checks
+We welcome contributions to make democratic participation more effective:
 
-## 🔧 Configuration
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/improvement`
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-### Environment Variables:
-- `GOOGLE_CLIENT_ID` - Google OAuth client ID
-- `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
-- `BETTER_AUTH_SECRET` - Secret key for Better Auth
-- `DATABASE_URL` - Database connection string (if using PostgreSQL)
+## Future Vision
 
-### VS Code Setup:
-The project includes VS Code configuration for enhanced development experience:
-- CSS variable autocomplete
-- Design system documentation on hover
-- Custom syntax highlighting for design tokens
+Sabha represents the beginning of a new era in democratic participation where:
+- Every citizen can contribute meaningfully to policy discussions
+- AI helps maintain quality and organization
+- Geographic boundaries don't limit civic engagement
+- Data-driven insights inform better decisions
+- Technology serves democracy, not the other way around
 
-## 📚 Documentation
+## Contact
 
-- [Design System Documentation](docs/DESIGN_SYSTEM.md)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Better Auth Documentation](https://better-auth.com)
-- [Drizzle ORM Documentation](https://orm.drizzle.team)
-
-## 🚀 Deployment
-
-The easiest way to deploy is using [Vercel](https://vercel.com/new):
-
-1. Connect your GitHub repository
-2. Add environment variables
-3. Deploy!
-
-For other platforms, run `npm run build` and deploy the `.next` folder.
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read our design system documentation before making changes to ensure consistency.
+- **Live Platform**: [https://sabha-delta.vercel.app/](https://sabha-delta.vercel.app/)
+- **Team**: Team Sabha
+- **Documentation**: [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)
+- **Issues**: [GitHub Issues](https://github.com/your-username/sabha/issues)
 
 ---
 
-Built with ❤️ using Next.js, Better Auth, and Drizzle ORM.
+*Building the future of democratic participation through AI-powered discourse.*
