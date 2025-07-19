@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface Comment {
   id: string;
@@ -23,13 +23,13 @@ interface DiscussionAnalysis {
   suggestions: string[];
 }
 
-export function DiscussionInsights({ topicTitle, topicContent, comments }: DiscussionInsightsProps) {
+export function DiscussionInsights({ topicTitle, comments }: DiscussionInsightsProps) {
   const [insights, setInsights] = useState<string[]>([]);
   const [analysis, setAnalysis] = useState<DiscussionAnalysis | null>(null);
   const [loading, setLoading] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
 
-  const generateInsights = async () => {
+  const generateInsights = useCallback(async () => {
     if (comments.length < 2) return; // Need at least 2 comments for meaningful insights
 
     setLoading(true);
@@ -71,14 +71,14 @@ export function DiscussionInsights({ topicTitle, topicContent, comments }: Discu
     } finally {
       setLoading(false);
     }
-  };
+  }, [comments.length, topicTitle]);
 
   // Auto-generate insights when there are enough comments
   useEffect(() => {
     if (comments.length >= 3 && !showInsights && !loading) {
       generateInsights();
     }
-  }, [comments.length]);
+  }, [comments.length, showInsights, loading, generateInsights]);
 
   if (comments.length < 2) return null;
 

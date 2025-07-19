@@ -151,7 +151,7 @@ Example format: ["First suggestion here", "Second suggestion here", "Third sugge
       try {
         const parsed = JSON.parse(suggestions);
         return Array.isArray(parsed) ? parsed.slice(0, 3) : [parsed].slice(0, 3);
-      } catch (error) {
+      } catch {
         console.warn('Failed to parse AI suggestions as JSON:', suggestions);
         // Fallback: extract strings from the response
         return suggestions
@@ -237,7 +237,7 @@ Example format: ["First reply here", "Second reply here", "Third reply here"]
       try {
         const parsed = JSON.parse(suggestions);
         return Array.isArray(parsed) ? parsed.slice(0, 3) : [parsed].slice(0, 3);
-      } catch (error) {
+      } catch {
         console.warn('Failed to parse AI reply suggestions as JSON:', suggestions);
         // Fallback: extract strings from the response
         return suggestions

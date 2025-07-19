@@ -75,14 +75,14 @@ export function CommentFilters({ comments, onFilteredComments }: CommentFiltersP
           
           <div className="flex gap-2">
             {[
-              { key: 'newest', label: 'Newest' },
-              { key: 'popular', label: 'Popular' },
-              { key: 'oldest', label: 'Oldest' },
-              { key: 'controversial', label: 'Controversial' }
+              { key: 'newest' as const, label: 'Newest' },
+              { key: 'popular' as const, label: 'Popular' },
+              { key: 'oldest' as const, label: 'Oldest' },
+              { key: 'controversial' as const, label: 'Controversial' }
             ].map(option => (
               <button
                 key={option.key}
-                onClick={() => handleSortChange(option.key as any)}
+                onClick={() => handleSortChange(option.key)}
                 style={{
                   padding: '0.375rem 0.75rem',
                   borderRadius: 'var(--sabha-radius-sm)',
