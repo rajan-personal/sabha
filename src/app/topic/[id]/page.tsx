@@ -4,6 +4,11 @@ import { Header } from '@/components/ui/Header';
 import { useSession } from '@/lib/auth-client';
 import { VoteButton } from '@/components/forum/VoteButton';
 import { UserAvatar } from '@/components/ui/UserAvatar';
+import { AICommentAssistant } from '@/components/ai/AICommentAssistant';
+import { AIReplyAssistant } from '@/components/ai/AIReplyAssistant';
+import { DiscussionInsights } from '@/components/ai/DiscussionInsights';
+import { CommentFilters } from '@/components/forum/CommentFilters';
+import { CommentAnalyzer } from '@/components/ai/CommentAnalyzer';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 
@@ -45,6 +50,9 @@ export default function TopicPage() {
   const [loading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState('');
+  const [filteredComments, setFilteredComments] = useState<Comment[]>([]);
 
   useEffect(() => {
     const fetchTopic = async () => {
@@ -69,8 +77,10 @@ export default function TopicPage() {
         if (commentsResponse.ok) {
           const commentsData = await commentsResponse.json();
           setComments(commentsData);
+          setFilteredComments(commentsData);
         } else {
           setComments([]);
+          setFilteredComments([]);
         }
       } catch (error) {
         console.error('Error fetching topic:', error);
@@ -150,6 +160,7 @@ export default function TopicPage() {
       
       // Add comment to the list
       setComments(prev => [...prev, newCommentData]);
+      setFilteredComments(prev => [...prev, newCommentData]);
       setNewComment('');
       
       // Update topic comment count
@@ -159,6 +170,42 @@ export default function TopicPage() {
       alert('Failed to post comment');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleReplySubmit = async (parentCommentId: string) => {
+    if (!session || !replyText.trim()) return;
+
+    try {
+      const response = await fetch(`/api/topics/${params.id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          content: replyText.trim(),
+          parentId: parentCommentId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create reply');
+      }
+
+      const newReply = await response.json();
+      
+      // Add reply to the comments list
+      setComments(prev => [...prev, newReply]);
+      setFilteredComments(prev => [...prev, newReply]);
+      setReplyText('');
+      setReplyingTo(null);
+      
+      // Update topic comment count
+      setTopic(prev => prev ? { ...prev, commentCount: prev.commentCount + 1 } : null);
+    } catch (error) {
+      console.error('Error posting reply:', error);
+      alert('Failed to post reply');
     }
   };
 
@@ -379,7 +426,16 @@ export default function TopicPage() {
                     marginBottom: 'var(--sabha-spacing-md)'
                   }}
                 />
-                <div className="flex justify-end">
+                
+                {/* AI Comment Assistant */}
+                <AICommentAssistant
+                  topicId={params.id as string}
+                  currentComment={newComment}
+                  onCommentSelect={(comment) => setNewComment(comment)}
+                  onCommentEnhance={(enhanced) => setNewComment(enhanced)}
+                />
+                
+                <div className="flex justify-end" style={{ marginTop: 'var(--sabha-spacing-md)' }}>
                   <button
                     type="submit"
                     disabled={isSubmitting || !newComment.trim()}
@@ -417,6 +473,15 @@ export default function TopicPage() {
             </div>
           )}
 
+          {/* Discussion Insights */}
+          {topic && (
+            <DiscussionInsights
+              topicTitle={topic.title}
+              topicContent={topic.content}
+              comments={comments}
+            />
+          )}
+
           {/* Comments */}
           <div style={{
             backgroundColor: 'var(--sabha-bg-primary)',
@@ -434,7 +499,13 @@ export default function TopicPage() {
               Comments ({comments.length})
             </h3>
 
-            {comments.length === 0 ? (
+            {/* Comment Filters */}
+            <CommentFilters
+              comments={comments}
+              onFilteredComments={setFilteredComments}
+            />
+
+            {filteredComments.length === 0 ? (
               <p style={{
                 color: 'var(--sabha-text-secondary)',
                 textAlign: 'center',
@@ -444,7 +515,7 @@ export default function TopicPage() {
               </p>
             ) : (
               <div className="space-y-6">
-                {comments.map(comment => (
+                {filteredComments.map(comment => (
                   <div key={comment.id} style={{
                     borderBottom: '1px solid var(--sabha-border-primary)',
                     paddingBottom: 'var(--sabha-spacing-lg)'
@@ -489,10 +560,121 @@ export default function TopicPage() {
 
                         <div style={{
                           color: 'var(--sabha-text-primary)',
-                          lineHeight: '1.6'
+                          lineHeight: '1.6',
+                          marginBottom: 'var(--sabha-spacing-md)'
                         }}>
                           {comment.content}
                         </div>
+
+                        {/* AI Comment Analysis */}
+                        <CommentAnalyzer
+                          comment={comment.content}
+                          topicId={params.id as string}
+                        />
+
+                        {/* Comment Actions */}
+                        {session && (
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: 'var(--sabha-text-secondary)',
+                                fontSize: '0.75rem',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.375rem',
+                                transition: 'var(--sabha-transition-fast)'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.color = 'var(--sabha-primary-600)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.color = 'var(--sabha-text-secondary)';
+                              }}
+                            >
+                              <svg style={{ width: '0.875rem', height: '0.875rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                              </svg>
+                              Reply
+                            </button>
+
+                            <AIReplyAssistant
+                              commentId={comment.id}
+                              topicId={params.id as string}
+                              onReplySelect={(reply) => {
+                                setReplyText(reply);
+                                setReplyingTo(comment.id);
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        {/* Reply Form */}
+                        {replyingTo === comment.id && (
+                          <div style={{
+                            marginTop: 'var(--sabha-spacing-md)',
+                            padding: 'var(--sabha-spacing-md)',
+                            borderRadius: 'var(--sabha-radius-md)',
+                            backgroundColor: 'var(--sabha-bg-secondary)',
+                            border: '1px solid var(--sabha-border-primary)'
+                          }}>
+                            <textarea
+                              value={replyText}
+                              onChange={(e) => setReplyText(e.target.value)}
+                              placeholder="Write your reply..."
+                              rows={3}
+                              style={{
+                                width: '100%',
+                                padding: 'var(--sabha-spacing-sm)',
+                                borderRadius: 'var(--sabha-radius-sm)',
+                                border: '1px solid var(--sabha-border-primary)',
+                                backgroundColor: 'var(--sabha-bg-primary)',
+                                color: 'var(--sabha-text-primary)',
+                                fontSize: '0.875rem',
+                                outline: 'none',
+                                resize: 'vertical',
+                                marginBottom: 'var(--sabha-spacing-sm)'
+                              }}
+                            />
+                            <div className="flex justify-end gap-2">
+                              <button
+                                onClick={() => {
+                                  setReplyingTo(null);
+                                  setReplyText('');
+                                }}
+                                style={{
+                                  padding: '0.375rem 0.75rem',
+                                  borderRadius: 'var(--sabha-radius-sm)',
+                                  border: '1px solid var(--sabha-border-primary)',
+                                  backgroundColor: 'var(--sabha-bg-primary)',
+                                  color: 'var(--sabha-text-secondary)',
+                                  fontSize: '0.75rem',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={() => handleReplySubmit(comment.id)}
+                                disabled={!replyText.trim()}
+                                style={{
+                                  padding: '0.375rem 0.75rem',
+                                  borderRadius: 'var(--sabha-radius-sm)',
+                                  border: 'none',
+                                  backgroundColor: replyText.trim() ? 'var(--sabha-primary-600)' : 'var(--sabha-primary-400)',
+                                  color: 'var(--sabha-text-inverse)',
+                                  fontSize: '0.75rem',
+                                  cursor: replyText.trim() ? 'pointer' : 'not-allowed'
+                                }}
+                              >
+                                Post Reply
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

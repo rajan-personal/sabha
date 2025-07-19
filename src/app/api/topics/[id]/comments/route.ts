@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { comment, topic, user } from '@/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
-import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
+import { GeminiService } from '@/lib/gemini';
 
 // GET /api/topics/[id]/comments - Fetch comments for a topic
 export async function GET(
@@ -47,23 +48,39 @@ export async function POST(
     const resolvedParams = await params;
     const topicId = resolvedParams.id;
 
-    // Get the session from headers (simplified auth check)
-    const headersList = await headers();
-    const cookieHeader = headersList.get('cookie');
+    // Get the authenticated user
+    const session = await auth.api.getSession({
+      headers: request.headers
+    });
     
-    if (!cookieHeader || !cookieHeader.includes('better-auth.session_token')) {
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const { content } = body;
+    const { content, parentId } = body;
 
     if (!content || !content.trim()) {
       return NextResponse.json({ error: 'Content is required' }, { status: 400 });
     }
 
+    // Optional: AI moderation check
+    try {
+      const moderation = await GeminiService.moderateComment(content.trim());
+      if (!moderation.isAppropriate) {
+        return NextResponse.json({
+          error: 'Comment does not meet community guidelines',
+          reason: moderation.reason,
+          suggestion: moderation.suggestion
+        }, { status: 400 });
+      }
+    } catch (error) {
+      console.warn('AI moderation failed, allowing comment:', error);
+      // Continue with comment creation if AI moderation fails
+    }
+
     // For now, use a placeholder user ID - in production, get this from the session
-    const userId = 'FhFGmmmN8QkGsnDk7wSBhN3Fl0Q8YhqP'; // Using the existing user ID
+    const userId = session.user.id;
 
     // Create the comment
     const newComment = await db.insert(comment).values({
@@ -71,7 +88,7 @@ export async function POST(
       content: content.trim(),
       authorId: userId,
       topicId: topicId,
-      parentId: null, // For now, no nested comments
+      parentId: parentId || null,
       upvotes: 0,
       downvotes: 0,
       createdAt: new Date(),
