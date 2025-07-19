@@ -62,13 +62,13 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 'var(--sabha-spacing-sm)',
-          padding: 'var(--sabha-spacing-md)',
+          gap: 'var(--sabha-spacing-md)',
+          padding: 'var(--sabha-spacing-md) var(--sabha-spacing-xl)',
           borderRadius: 'var(--sabha-radius-lg)',
           border: '1px solid var(--sabha-border-primary)',
           backgroundColor: 'var(--sabha-bg-primary)',
           color: 'var(--sabha-text-primary)',
-          fontSize: '0.875rem',
+          fontSize: '1rem',
           fontWeight: '500',
           cursor: 'pointer',
           width: '100%',
@@ -103,7 +103,7 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
           boxShadow: 'var(--sabha-shadow-lg)',
           border: '1px solid var(--sabha-border-primary)',
           zIndex: 50,
-          maxHeight: '300px',
+          maxHeight: '400px',
           overflowY: 'auto'
         }}>
           <div style={{ padding: 'var(--sabha-spacing-sm)' }}>

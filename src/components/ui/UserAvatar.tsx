@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface UserAvatarProps {
   user: {
@@ -68,9 +69,11 @@ export function UserAvatar({ user, size = 'md', className = '' }: UserAvatarProp
   if (user.image && !imageError) {
     return (
       <div style={containerStyle} className={className}>
-        <img
+        <Image
           src={user.image}
           alt={user.name || user.email || 'User avatar'}
+          width={200}
+          height={200}
           style={{
             width: '100%',
             height: '100%',

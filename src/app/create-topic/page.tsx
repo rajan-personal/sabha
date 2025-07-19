@@ -475,7 +475,7 @@ function CreateTopicForm() {
           </li>
           <li style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--sabha-spacing-sm)' }}>
             <span style={{ color: 'var(--sabha-secondary-500)', fontSize: '0.75rem', marginTop: '0.1rem' }}>•</span>
-            Use "AI Refine" to generate or improve content from your title
+            Use &quot;AI Refine&quot; to generate or improve content from your title
           </li>
         </ul>
       </div>

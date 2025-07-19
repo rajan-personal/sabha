@@ -1,7 +1,6 @@
 'use client';
 
 import { useSession } from '@/lib/auth-client';
-import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
 import { Header } from '@/components/ui/Header';
 import { TopicList } from '@/components/forum/TopicList';
 import { CategoryFilter } from '@/components/forum/CategoryFilter';
@@ -9,7 +8,6 @@ import { CreateTopicButton } from '@/components/forum/CreateTopicButton';
 import { useState } from 'react';
 
 export default function Home() {
-  const { data: session } = useSession();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
