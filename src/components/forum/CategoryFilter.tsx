@@ -21,15 +21,26 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('/api/categories');
-        const data = await response.json();
+        const [categoriesResponse, topicsResponse] = await Promise.all([
+          fetch('/api/categories'),
+          fetch('/api/topics')
+        ]);
         
-        // Map categories and set count to 0 for now (can be enhanced later)
-        const categoriesWithCount = data.map((cat: {id: string, name: string, color: string}) => ({
+        const categoriesData = await categoriesResponse.json();
+        const topicsData = await topicsResponse.json();
+        
+        // Count topics per category
+        const categoryCount = topicsData.reduce((acc: {[key: string]: number}, topic: {categoryId: string}) => {
+          acc[topic.categoryId] = (acc[topic.categoryId] || 0) + 1;
+          return acc;
+        }, {});
+        
+        // Map categories with actual counts
+        const categoriesWithCount = categoriesData.map((cat: {id: string, name: string, color: string}) => ({
           id: cat.id,
           name: cat.name,
           color: cat.color,
-          count: 0, // TODO: Implement actual count from API
+          count: categoryCount[cat.id] || 0,
         }));
         
         setCategories(categoriesWithCount);
@@ -60,7 +71,7 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
           fontSize: '0.875rem',
           fontWeight: '500',
           cursor: 'pointer',
-          minWidth: '180px',
+          width: '100%',
           justifyContent: 'space-between'
         }}
       >

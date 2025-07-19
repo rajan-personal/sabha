@@ -12,7 +12,7 @@ export default function CreateTopicPage() {
         minHeight: '100vh', 
         background: 'var(--sabha-bg-secondary)' 
       }}>
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
           <Header />
           <CreateTopicForm />
         </div>
@@ -108,15 +108,17 @@ function CreateTopicForm() {
         </p>
       </div>
 
-      <div style={{
-        backgroundColor: 'var(--sabha-bg-primary)',
-        borderRadius: 'var(--sabha-radius-lg)',
-        boxShadow: 'var(--sabha-shadow-sm)',
-        border: '1px solid var(--sabha-border-primary)',
-        padding: 'var(--sabha-spacing-xl)',
-        maxWidth: '800px'
-      }}>
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
+        {/* Main Form */}
+        <div className="lg:col-span-2">
+          <div style={{
+            backgroundColor: 'var(--sabha-bg-primary)',
+            borderRadius: 'var(--sabha-radius-lg)',
+            boxShadow: 'var(--sabha-shadow-sm)',
+            border: '1px solid var(--sabha-border-primary)',
+            padding: 'var(--sabha-spacing-xl)'
+          }}>
+            <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title */}
           <div>
             <label style={{
@@ -235,34 +237,6 @@ function CreateTopicForm() {
             />
           </div>
 
-          {/* Community Guidelines */}
-          <div style={{
-            backgroundColor: 'var(--sabha-accent-50)',
-            border: '1px solid var(--sabha-accent-200)',
-            borderRadius: 'var(--sabha-radius-lg)',
-            padding: 'var(--sabha-spacing-md)'
-          }}>
-            <div className="flex items-center gap-2 mb-2">
-              <svg style={{ width: '1.25rem', height: '1.25rem', color: 'var(--sabha-accent-600)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <h3 style={{
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                color: 'var(--sabha-accent-700)'
-              }}>
-                Community Guidelines
-              </h3>
-            </div>
-            <p style={{
-              fontSize: '0.875rem',
-              color: 'var(--sabha-accent-700)',
-              lineHeight: '1.5'
-            }}>
-              Please ensure your topic contributes meaningfully to climate change discussions and follows our community guidelines.
-            </p>
-          </div>
-
           {/* Submit Button */}
           <div className="flex justify-end gap-4">
             <button
@@ -319,6 +293,102 @@ function CreateTopicForm() {
           </div>
         </form>
       </div>
-    </>
+    </div>
+
+    {/* Sidebar */}
+    <div className="lg:col-span-1 mt-6 lg:mt-0">
+      {/* Community Guidelines */}
+      <div style={{
+        backgroundColor: 'var(--sabha-bg-primary)',
+        borderRadius: 'var(--sabha-radius-lg)',
+        boxShadow: 'var(--sabha-shadow-sm)',
+        border: '1px solid var(--sabha-border-primary)',
+        padding: 'var(--sabha-spacing-xl)',
+        marginBottom: 'var(--sabha-spacing-lg)'
+      }}>
+        <div className="flex items-center gap-2 mb-4">
+          <svg style={{ width: '1.25rem', height: '1.25rem', color: 'var(--sabha-accent-600)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3 style={{
+            fontSize: '1.125rem',
+            fontWeight: '600',
+            color: 'var(--sabha-text-primary)'
+          }}>
+            Community Guidelines
+          </h3>
+        </div>
+        <ul style={{
+          fontSize: '0.875rem',
+          color: 'var(--sabha-text-secondary)',
+          lineHeight: '1.6',
+          listStyle: 'none',
+          padding: 0,
+          margin: 0
+        }}>
+          <li style={{ marginBottom: 'var(--sabha-spacing-sm)', display: 'flex', alignItems: 'flex-start', gap: 'var(--sabha-spacing-sm)' }}>
+            <span style={{ color: 'var(--sabha-primary-500)', fontSize: '0.75rem', marginTop: '0.1rem' }}>•</span>
+            Be respectful and constructive in your discussions
+          </li>
+          <li style={{ marginBottom: 'var(--sabha-spacing-sm)', display: 'flex', alignItems: 'flex-start', gap: 'var(--sabha-spacing-sm)' }}>
+            <span style={{ color: 'var(--sabha-primary-500)', fontSize: '0.75rem', marginTop: '0.1rem' }}>•</span>
+            Stay on-topic and contribute meaningfully
+          </li>
+          <li style={{ marginBottom: 'var(--sabha-spacing-sm)', display: 'flex', alignItems: 'flex-start', gap: 'var(--sabha-spacing-sm)' }}>
+            <span style={{ color: 'var(--sabha-primary-500)', fontSize: '0.75rem', marginTop: '0.1rem' }}>•</span>
+            Use clear, descriptive titles for your topics
+          </li>
+          <li style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--sabha-spacing-sm)' }}>
+            <span style={{ color: 'var(--sabha-primary-500)', fontSize: '0.75rem', marginTop: '0.1rem' }}>•</span>
+            Provide sufficient context in your content
+          </li>
+        </ul>
+      </div>
+
+      {/* Tips */}
+      <div style={{
+        backgroundColor: 'var(--sabha-bg-primary)',
+        borderRadius: 'var(--sabha-radius-lg)',
+        boxShadow: 'var(--sabha-shadow-sm)',
+        border: '1px solid var(--sabha-border-primary)',
+        padding: 'var(--sabha-spacing-xl)'
+      }}>
+        <div className="flex items-center gap-2 mb-4">
+          <svg style={{ width: '1.25rem', height: '1.25rem', color: 'var(--sabha-secondary-600)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+          <h3 style={{
+            fontSize: '1.125rem',
+            fontWeight: '600',
+            color: 'var(--sabha-text-primary)'
+          }}>
+            Writing Tips
+          </h3>
+        </div>
+        <ul style={{
+          fontSize: '0.875rem',
+          color: 'var(--sabha-text-secondary)',
+          lineHeight: '1.6',
+          listStyle: 'none',
+          padding: 0,
+          margin: 0
+        }}>
+          <li style={{ marginBottom: 'var(--sabha-spacing-sm)', display: 'flex', alignItems: 'flex-start', gap: 'var(--sabha-spacing-sm)' }}>
+            <span style={{ color: 'var(--sabha-secondary-500)', fontSize: '0.75rem', marginTop: '0.1rem' }}>•</span>
+            Choose a category that best fits your topic
+          </li>
+          <li style={{ marginBottom: 'var(--sabha-spacing-sm)', display: 'flex', alignItems: 'flex-start', gap: 'var(--sabha-spacing-sm)' }}>
+            <span style={{ color: 'var(--sabha-secondary-500)', fontSize: '0.75rem', marginTop: '0.1rem' }}>•</span>
+            Include relevant details and context
+          </li>
+          <li style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--sabha-spacing-sm)' }}>
+            <span style={{ color: 'var(--sabha-secondary-500)', fontSize: '0.75rem', marginTop: '0.1rem' }}>•</span>
+            Format your content with proper paragraphs
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</>
   );
 }

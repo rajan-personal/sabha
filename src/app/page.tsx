@@ -18,7 +18,7 @@ export default function Home() {
       minHeight: '100vh', 
       background: 'var(--sabha-bg-secondary)' 
     }}>
-      <div className="container mx-auto px-4 py-8">
+      <div className="mx-auto px-6 lg:px-8 py-8 max-w-none">
         <Header />
 
         <HomeContent 
@@ -66,13 +66,7 @@ function HomeContent({
             </p>
           </div>
           
-          {session ? (
-            <CreateTopicButton />
-          ) : (
-            <div style={{ maxWidth: '200px' }}>
-              <GoogleSignInButton size="sm" variant="compact" />
-            </div>
-          )}
+          {session && <CreateTopicButton />}
         </div>
 
         {/* Search and Filter Bar */}
@@ -85,12 +79,20 @@ function HomeContent({
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 width: '100%',
-                padding: 'var(--sabha-spacing-sm) var(--sabha-spacing-md)',
+                padding: 'var(--sabha-spacing-md)',
                 border: '1px solid var(--sabha-border-primary)',
                 borderRadius: 'var(--sabha-radius-lg)',
-                fontSize: '0.875rem',
+                fontSize: '1rem',
                 backgroundColor: 'var(--sabha-bg-primary)',
                 color: 'var(--sabha-text-primary)',
+                outline: 'none',
+                transition: 'var(--sabha-transition-fast)'
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = 'var(--sabha-primary-500)';
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = 'var(--sabha-border-primary)';
               }}
             />
           </div>
@@ -101,26 +103,6 @@ function HomeContent({
             />
           </div>
         </div>
-
-        {/* Sign-in prompt for non-authenticated users */}
-        {!session && (
-          <div style={{
-            backgroundColor: 'var(--sabha-bg-primary)',
-            border: '1px solid var(--sabha-border-primary)',
-            borderRadius: 'var(--sabha-radius-lg)',
-            padding: 'var(--sabha-spacing-lg)',
-            marginBottom: 'var(--sabha-spacing-lg)',
-            textAlign: 'center'
-          }}>
-            <p style={{ 
-              color: 'var(--sabha-text-secondary)',
-              marginBottom: 'var(--sabha-spacing-md)'
-            }}>
-              💡 Sign in to create topics, comment, and vote on discussions
-            </p>
-            <GoogleSignInButton size="md" />
-          </div>
-        )}
       </div>
 
       {/* Topics List */}
