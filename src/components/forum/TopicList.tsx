@@ -27,9 +27,11 @@ interface Topic {
 
 interface TopicListProps {
   searchQuery: string;
+  governanceLevel?: 'national' | 'state' | 'local';
+  location?: string;
 }
 
-export function TopicList({ searchQuery }: TopicListProps) {
+export function TopicList({ searchQuery, governanceLevel, location }: TopicListProps) {
   const { data: session } = useSession();
   const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +42,19 @@ export function TopicList({ searchQuery }: TopicListProps) {
       try {
         setLoading(true);
         
-        const response = await fetch('/api/topics');
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (governanceLevel) {
+          params.append('governance', governanceLevel);
+        }
+        if (location && governanceLevel !== 'national') {
+          params.append('location', location);
+        }
+        
+        const queryString = params.toString();
+        const url = queryString ? `/api/posts?${queryString}` : '/api/posts';
+        
+        const response = await fetch(url);
         const data = await response.json();
         
         let filteredTopics = data;
@@ -63,7 +77,7 @@ export function TopicList({ searchQuery }: TopicListProps) {
     };
 
     fetchTopics();
-  }, [searchQuery]);
+  }, [searchQuery, governanceLevel, location]);
 
   const handleVote = (topicId: string, voteType: 'upvote' | 'downvote') => {
     if (!session) {

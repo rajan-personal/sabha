@@ -4,10 +4,46 @@ import { useSession } from '@/lib/auth-client';
 import { Header } from '@/components/ui/Header';
 import { TopicList } from '@/components/forum/TopicList';
 import { CreateTopicButton } from '@/components/forum/CreateTopicButton';
-import { useState } from 'react';
+import { LocationSelector } from '@/components/political/LocationSelector';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<'national' | 'state' | 'local'>('national');
+  const [selectedState, setSelectedState] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('');
+
+  // Load state from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedTab = localStorage.getItem('sabha-active-tab') as 'national' | 'state' | 'local';
+      const savedState = localStorage.getItem('sabha-selected-state');
+      const savedLocation = localStorage.getItem('sabha-selected-location');
+
+      if (savedTab) setActiveTab(savedTab);
+      if (savedState) setSelectedState(savedState);
+      if (savedLocation) setSelectedLocation(savedLocation);
+    }
+  }, []);
+
+  // Save to localStorage when state changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sabha-active-tab', activeTab);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sabha-selected-state', selectedState);
+    }
+  }, [selectedState]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sabha-selected-location', selectedLocation);
+    }
+  }, [selectedLocation]);
 
   return (
     <div style={{ 
@@ -20,6 +56,12 @@ export default function Home() {
         <HomeContent 
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          selectedState={selectedState}
+          setSelectedState={setSelectedState}
+          selectedLocation={selectedLocation}
+          setSelectedLocation={setSelectedLocation}
         />
       </div>
     </div>
@@ -28,12 +70,49 @@ export default function Home() {
 
 function HomeContent({
   searchQuery,
-  setSearchQuery
+  setSearchQuery,
+  activeTab,
+  setActiveTab,
+  selectedState,
+  setSelectedState,
+  selectedLocation,
+  setSelectedLocation
 }: {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  activeTab: 'national' | 'state' | 'local';
+  setActiveTab: (tab: 'national' | 'state' | 'local') => void;
+  selectedState: string;
+  setSelectedState: (state: string) => void;
+  selectedLocation: string;
+  setSelectedLocation: (location: string) => void;
 }) {
   const { data: session } = useSession();
+
+  const handleTabChange = (tab: 'national' | 'state' | 'local') => {
+    setActiveTab(tab);
+    // Reset location selections when changing tabs
+    if (tab === 'national') {
+      setSelectedState('');
+      setSelectedLocation('');
+    } else if (tab === 'state') {
+      setSelectedLocation('');
+    }
+  };
+
+  const handleLocationChange = (value: string) => {
+    if (activeTab === 'state') {
+      setSelectedState(value);
+    } else if (activeTab === 'local') {
+      setSelectedLocation(value);
+    }
+  };
+
+  const getLocationValue = () => {
+    if (activeTab === 'state') return selectedState;
+    if (activeTab === 'local') return selectedLocation;
+    return '';
+  };
 
   return (
     <>
@@ -87,11 +166,84 @@ function HomeContent({
             />
           </div>
         </div>
+
+        {/* Governance Level Tabs */}
+        <div className="mb-6">
+          <div 
+            className="flex space-x-1 rounded-lg p-1 border" 
+            style={{
+              backgroundColor: 'var(--sabha-bg-primary)',
+              borderColor: 'var(--sabha-border-primary)'
+            }}
+          >
+            {[
+              { key: 'national', label: 'National', icon: '🏛️' },
+              { key: 'state', label: 'State', icon: '🏢' },
+              { key: 'local', label: 'Local', icon: '🏘️' }
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => handleTabChange(tab.key as 'national' | 'state' | 'local')}
+                style={{
+                  flex: 1,
+                  padding: 'var(--sabha-spacing-md)',
+                  borderRadius: 'var(--sabha-radius-md)',
+                  border: 'none',
+                  fontSize: 'var(--sabha-text-base)',
+                  fontWeight: activeTab === tab.key ? '600' : '400',
+                  backgroundColor: activeTab === tab.key ? 'var(--sabha-primary-500)' : 'transparent',
+                  color: activeTab === tab.key ? 'white' : 'var(--sabha-text-primary)',
+                  cursor: 'pointer',
+                  transition: 'var(--sabha-transition-fast)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 'var(--sabha-spacing-sm)'
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== tab.key) {
+                    e.currentTarget.style.backgroundColor = 'var(--sabha-primary-50)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== tab.key) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
+              >
+                <span>{tab.icon}</span>
+                <span>{tab.label}</span>
+                {activeTab === tab.key && (
+                  <span style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                    borderRadius: '50%',
+                    width: '6px',
+                    height: '6px'
+                  }} />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Location Selector for State and Local tabs */}
+          {(activeTab === 'state' || activeTab === 'local') && (
+            <div className="mt-4">
+              <LocationSelector
+                value={getLocationValue()}
+                onChange={handleLocationChange}
+                governanceLevel={activeTab}
+                required={false}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Topics List */}
       <TopicList 
         searchQuery={searchQuery}
+        governanceLevel={activeTab}
+        location={activeTab === 'state' ? selectedState : activeTab === 'local' ? selectedLocation : undefined}
       />
     </>
   );
