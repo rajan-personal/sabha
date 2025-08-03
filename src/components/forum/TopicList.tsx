@@ -11,9 +11,13 @@ interface Topic {
   authorId: string;
   authorName: string;
   authorImage: string;
-  categoryId: string;
-  categoryName: string;
-  categoryColor: string;
+  postType?: 'issue' | 'feedback' | 'suggestion';
+  priorityLevel?: 'low' | 'medium' | 'high';
+  governanceLevel?: 'national' | 'state' | 'local';
+  status?: 'open' | 'in_review' | 'acknowledged' | 'resolved' | 'rejected';
+  location?: string;
+  deadline?: string;
+  officialResponse?: string;
   upvotes: number;
   downvotes: number;
   commentCount: number;
@@ -23,10 +27,9 @@ interface Topic {
 
 interface TopicListProps {
   searchQuery: string;
-  selectedCategory: string | null;
 }
 
-export function TopicList({ searchQuery, selectedCategory }: TopicListProps) {
+export function TopicList({ searchQuery }: TopicListProps) {
   const { data: session } = useSession();
   const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,13 +40,7 @@ export function TopicList({ searchQuery, selectedCategory }: TopicListProps) {
       try {
         setLoading(true);
         
-        // Build query parameters
-        const params = new URLSearchParams();
-        if (selectedCategory) {
-          params.append('category', selectedCategory);
-        }
-        
-        const response = await fetch(`/api/topics?${params}`);
+        const response = await fetch('/api/topics');
         const data = await response.json();
         
         let filteredTopics = data;
@@ -66,7 +63,7 @@ export function TopicList({ searchQuery, selectedCategory }: TopicListProps) {
     };
 
     fetchTopics();
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery]);
 
   const handleVote = (topicId: string, voteType: 'upvote' | 'downvote') => {
     if (!session) {

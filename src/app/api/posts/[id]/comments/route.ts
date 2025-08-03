@@ -5,14 +5,14 @@ import { eq, desc, sql } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { GeminiService } from '@/lib/gemini';
 
-// GET /api/topics/[id]/comments - Fetch comments for a topic
+// GET /api/posts/[id]/comments - Fetch comments for a post
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const resolvedParams = await params;
-    const topicId = resolvedParams.id;
+    const postId = resolvedParams.id;
 
     // Fetch comments with author information
     const comments = await db
@@ -29,7 +29,7 @@ export async function GET(
       })
       .from(comment)
       .leftJoin(user, eq(comment.authorId, user.id))
-      .where(eq(comment.postId, topicId))
+      .where(eq(comment.postId, postId))
       .orderBy(desc(comment.createdAt));
 
     return NextResponse.json(comments);
@@ -39,14 +39,14 @@ export async function GET(
   }
 }
 
-// POST /api/topics/[id]/comments - Create a new comment
+// POST /api/posts/[id]/comments - Create a new comment
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const resolvedParams = await params;
-    const topicId = resolvedParams.id;
+    const postId = resolvedParams.id;
 
     // Get the authenticated user
     const session = await auth.api.getSession({
@@ -79,7 +79,6 @@ export async function POST(
       // Continue with comment creation if AI moderation fails
     }
 
-    // For now, use a placeholder user ID - in production, get this from the session
     const userId = session.user.id;
 
     // Create the comment
@@ -87,7 +86,7 @@ export async function POST(
       id: crypto.randomUUID(),
       content: content.trim(),
       authorId: userId,
-      postId: topicId,
+      postId: postId,
       parentId: parentId || null,
       upvotes: 0,
       downvotes: 0,
@@ -98,11 +97,14 @@ export async function POST(
     // Update the post's comment count
     const currentCommentCount = await db.select({ count: sql<number>`count(*)` })
       .from(comment)
-      .where(eq(comment.postId, topicId));
+      .where(eq(comment.postId, postId));
     
     await db.update(post)
-      .set({ commentCount: currentCommentCount[0].count })
-      .where(eq(post.id, topicId));
+      .set({ 
+        commentCount: currentCommentCount[0].count,
+        updatedAt: new Date()
+      })
+      .where(eq(post.id, postId));
 
     // Fetch the created comment with author information
     const createdComment = await db

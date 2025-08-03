@@ -19,9 +19,13 @@ interface Topic {
   authorId: string;
   authorName: string;
   authorImage: string;
-  categoryId: string;
-  categoryName: string;
-  categoryColor: string;
+  postType?: 'issue' | 'feedback' | 'suggestion';
+  priorityLevel?: 'low' | 'medium' | 'high';
+  governanceLevel?: 'national' | 'state' | 'local';
+  status?: 'open' | 'in_review' | 'acknowledged' | 'resolved' | 'rejected';
+  location?: string;
+  deadline?: string;
+  officialResponse?: string;
   upvotes: number;
   downvotes: number;
   commentCount: number;
@@ -299,20 +303,89 @@ export default function TopicPage() {
 
               {/* Content */}
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-4">
-                  <span style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    padding: '0.25rem 0.5rem',
-                    borderRadius: 'var(--sabha-radius-sm)',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    backgroundColor: topic.categoryColor + '20',
-                    color: topic.categoryColor,
-                    border: `1px solid ${topic.categoryColor}40`
-                  }}>
-                    {topic.categoryName}
-                  </span>
+                <div className="flex items-center gap-2 mb-4 flex-wrap">
+                  {/* Post Type Badge */}
+                  {topic.postType && (
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: 'var(--sabha-radius-sm)',
+                      fontSize: '0.75rem',
+                      fontWeight: '500',
+                      backgroundColor: topic.postType === 'issue' ? '#ef444420' : 
+                                      topic.postType === 'feedback' ? '#3b82f620' : '#10b98120',
+                      color: topic.postType === 'issue' ? '#ef4444' : 
+                             topic.postType === 'feedback' ? '#3b82f6' : '#10b981',
+                      border: `1px solid ${topic.postType === 'issue' ? '#ef444440' : 
+                                           topic.postType === 'feedback' ? '#3b82f640' : '#10b98140'}`
+                    }}>
+                      {topic.postType.charAt(0).toUpperCase() + topic.postType.slice(1)}
+                    </span>
+                  )}
+
+                  {/* Priority Level Badge */}
+                  {topic.priorityLevel && (
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: 'var(--sabha-radius-sm)',
+                      fontSize: '0.75rem',
+                      fontWeight: '500',
+                      backgroundColor: topic.priorityLevel === 'high' ? '#dc262620' : 
+                                      topic.priorityLevel === 'medium' ? '#ea580c20' : '#65a30d20',
+                      color: topic.priorityLevel === 'high' ? '#dc2626' : 
+                             topic.priorityLevel === 'medium' ? '#ea580c' : '#65a30d',
+                      border: `1px solid ${topic.priorityLevel === 'high' ? '#dc262640' : 
+                                           topic.priorityLevel === 'medium' ? '#ea580c40' : '#65a30d40'}`
+                    }}>
+                      {topic.priorityLevel.charAt(0).toUpperCase() + topic.priorityLevel.slice(1)} Priority
+                    </span>
+                  )}
+
+                  {/* Governance Level Badge */}
+                  {topic.governanceLevel && (
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: 'var(--sabha-radius-sm)',
+                      fontSize: '0.75rem',
+                      fontWeight: '500',
+                      backgroundColor: '#6b46c120',
+                      color: '#6b46c1',
+                      border: '1px solid #6b46c140'
+                    }}>
+                      {topic.governanceLevel.charAt(0).toUpperCase() + topic.governanceLevel.slice(1)}
+                    </span>
+                  )}
+
+                  {/* Status Badge */}
+                  {topic.status && (
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: 'var(--sabha-radius-sm)',
+                      fontSize: '0.75rem',
+                      fontWeight: '500',
+                      backgroundColor: topic.status === 'open' ? '#3b82f620' :
+                                      topic.status === 'in_review' ? '#ea580c20' :
+                                      topic.status === 'acknowledged' ? '#f59e0b20' :
+                                      topic.status === 'resolved' ? '#10b98120' : '#6b737820',
+                      color: topic.status === 'open' ? '#3b82f6' :
+                             topic.status === 'in_review' ? '#ea580c' :
+                             topic.status === 'acknowledged' ? '#f59e0b' :
+                             topic.status === 'resolved' ? '#10b981' : '#6b7378',
+                      border: `1px solid ${topic.status === 'open' ? '#3b82f640' :
+                                           topic.status === 'in_review' ? '#ea580c40' :
+                                           topic.status === 'acknowledged' ? '#f59e0b40' :
+                                           topic.status === 'resolved' ? '#10b98140' : '#6b737840'}`
+                    }}>
+                      {topic.status.replace('_', ' ').charAt(0).toUpperCase() + topic.status.replace('_', ' ').slice(1)}
+                    </span>
+                  )}
                 </div>
 
                 <h1 style={{
@@ -334,6 +407,83 @@ export default function TopicPage() {
                 }}>
                   {topic.content}
                 </div>
+
+                {/* Additional Political Information */}
+                {(topic.location || topic.deadline || topic.officialResponse) && (
+                  <div style={{
+                    marginBottom: 'var(--sabha-spacing-lg)',
+                    padding: 'var(--sabha-spacing-lg)',
+                    borderRadius: 'var(--sabha-radius-lg)',
+                    backgroundColor: 'var(--sabha-bg-secondary)',
+                    border: '1px solid var(--sabha-border-primary)'
+                  }}>
+                    <h3 style={{
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      color: 'var(--sabha-text-primary)',
+                      marginBottom: 'var(--sabha-spacing-md)'
+                    }}>
+                      Additional Information
+                    </h3>
+                    
+                    {topic.location && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <svg style={{ width: '1rem', height: '1rem', color: 'var(--sabha-text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span style={{
+                          fontSize: '0.875rem',
+                          color: 'var(--sabha-text-secondary)'
+                        }}>
+                          <strong>Location:</strong> {topic.location}
+                        </span>
+                      </div>
+                    )}
+
+                    {topic.deadline && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <svg style={{ width: '1rem', height: '1rem', color: 'var(--sabha-text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span style={{
+                          fontSize: '0.875rem',
+                          color: 'var(--sabha-text-secondary)'
+                        }}>
+                          <strong>Deadline:</strong> {new Date(topic.deadline).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+
+                    {topic.officialResponse && (
+                      <div className="mb-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <svg style={{ width: '1rem', height: '1rem', color: 'var(--sabha-text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span style={{
+                            fontSize: '0.875rem',
+                            fontWeight: '600',
+                            color: 'var(--sabha-text-primary)'
+                          }}>
+                            Official Response:
+                          </span>
+                        </div>
+                        <div style={{
+                          padding: 'var(--sabha-spacing-md)',
+                          borderRadius: 'var(--sabha-radius-md)',
+                          backgroundColor: 'var(--sabha-bg-primary)',
+                          border: '1px solid var(--sabha-border-secondary)',
+                          fontSize: '0.875rem',
+                          color: 'var(--sabha-text-secondary)',
+                          lineHeight: '1.5'
+                        }}>
+                          {topic.officialResponse}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Meta Information */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">

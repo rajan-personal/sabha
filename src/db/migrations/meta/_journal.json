@@ -8,6 +8,27 @@
       "when": 1752846400633,
       "tag": "0000_known_joystick",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1754219053761,
+      "tag": "0001_foamy_hex",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1754222876409,
+      "tag": "0002_mixed_blacklash",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1754224476283,
+      "tag": "0003_tan_vanisher",
+      "breakpoints": true
     }
   ]
 }

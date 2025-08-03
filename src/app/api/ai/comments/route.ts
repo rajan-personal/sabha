@@ -74,7 +74,7 @@ async function handleCommentSuggestions(data: { topicId: string }) {
     const existingComments = await db
       .select({ content: comment.content })
       .from(comment)
-      .where(eq(comment.topicId, topicId))
+      .where(eq(comment.postId, topicId))
       .limit(5);
 
     const suggestions = await GeminiService.generateCommentSuggestions(
@@ -240,13 +240,13 @@ async function handleDiscussionAnalysis(data: { topicId: string }) {
 
   if (!topicId) {
     return NextResponse.json(
-      { error: 'Topic ID is required' },
+      { error: 'Post ID is required' },
       { status: 400 }
     );
   }
 
   try {
-    // Get topic details
+    // Get topic/post details
     const topicData = await db
       .select({
         title: topic.title,
@@ -271,7 +271,7 @@ async function handleDiscussionAnalysis(data: { topicId: string }) {
         createdAt: comment.createdAt,
       })
       .from(comment)
-      .where(eq(comment.topicId, topicId))
+      .where(eq(comment.postId, topicId))
       .limit(20);
 
     const analysis = await GeminiService.analyzeDiscussion(

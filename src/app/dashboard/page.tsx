@@ -3,7 +3,6 @@
 import { Header } from '@/components/ui/Header';
 import { useSession } from '@/lib/auth-client';
 import { TopicList } from '@/components/forum/TopicList';
-import { CategoryFilter } from '@/components/forum/CategoryFilter';
 import { CreateTopicButton } from '@/components/forum/CreateTopicButton';
 import { useState } from 'react';
 
@@ -23,7 +22,6 @@ export default function DashboardPage() {
 
 function DashboardContent() {
   const { data: session } = useSession();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
@@ -67,17 +65,12 @@ function DashboardContent() {
               }}
             />
           </div>
-          <CategoryFilter 
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-          />
         </div>
       </div>
 
       {/* Topic List */}
       <TopicList 
         searchQuery={searchQuery}
-        selectedCategory={selectedCategory}
       />
     </>
   );

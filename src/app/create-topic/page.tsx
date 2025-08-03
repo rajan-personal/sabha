@@ -2,6 +2,10 @@
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Header } from '@/components/ui/Header';
+import { PostTypeSelector } from '@/components/political/PostTypeSelector';
+import { PrioritySelector } from '@/components/political/PrioritySelector';
+import { GovernanceLevelSelector } from '@/components/political/GovernanceLevelSelector';
+import { LocationSelector } from '@/components/political/LocationSelector';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -14,43 +18,25 @@ export default function CreateTopicPage() {
       }}>
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           <Header />
-          <CreateTopicForm />
+          <CreatePoliticalPostForm />
         </div>
       </div>
     </ProtectedRoute>
   );
 }
 
-function CreateTopicForm() {
+function CreatePoliticalPostForm() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    categoryId: ''
+    postType: 'suggestion' as 'issue' | 'feedback' | 'suggestion',
+    priorityLevel: 'medium' as 'low' | 'medium' | 'high',
+    governanceLevel: 'national' as 'national' | 'state' | 'local',
+    location: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [categories, setCategories] = useState<{id: string, name: string, color: string}[]>([]);
   const [isEnhancing, setIsEnhancing] = useState(false);
-
-  // Fetch categories from API
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch('/api/categories');
-        const data = await response.json();
-        setCategories(data.map((cat: {id: string, name: string, color: string}) => ({ 
-          id: cat.id, 
-          name: cat.name, 
-          color: cat.color 
-        })));
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-        setCategories([]);
-      }
-    };
-
-    fetchCategories();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,22 +51,25 @@ function CreateTopicForm() {
         body: JSON.stringify({
           title: formData.title,
           content: formData.content,
-          categoryId: formData.categoryId,
+          postType: formData.postType,
+          priorityLevel: formData.priorityLevel,
+          governanceLevel: formData.governanceLevel,
+          location: formData.location || null,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create topic');
+        throw new Error('Failed to create post');
       }
 
-      const newTopic = await response.json();
-      console.log('Topic created:', newTopic);
+      const newPost = await response.json();
+      console.log('Political post created:', newPost);
       
-      // Redirect to dashboard after successful creation
-      router.push('/dashboard');
+      // Redirect to home page after successful creation
+      router.push('/');
     } catch (error) {
-      console.error('Error creating topic:', error);
-      alert('Failed to create topic. Please try again.');
+      console.error('Error creating post:', error);
+      alert('Failed to create post. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -101,7 +90,6 @@ function CreateTopicForm() {
 
     setIsEnhancing(true);
     try {
-      const selectedCategory = categories.find(cat => cat.id === formData.categoryId);
       const response = await fetch('/api/ai/enhance', {
         method: 'POST',
         headers: {
@@ -110,7 +98,7 @@ function CreateTopicForm() {
         body: JSON.stringify({
           title: formData.title,
           content: formData.content || '', // Allow empty content
-          category: selectedCategory?.name || 'General',
+          category: 'Political',
           action: 'enhance'
         }),
       });
@@ -141,10 +129,10 @@ function CreateTopicForm() {
           color: 'var(--sabha-text-primary)',
           marginBottom: 'var(--sabha-spacing-sm)'
         }}>
-          Create New Topic
+          Create Political Post
         </h1>
         <p style={{ color: 'var(--sabha-text-secondary)' }}>
-          Share your ideas and start a discussion with the community
+          Share issues, provide feedback, or suggest improvements for better governance
         </p>
       </div>
 
@@ -196,46 +184,95 @@ function CreateTopicForm() {
             />
           </div>
 
-          {/* Category */}
-          <div>
-            <label style={{
-              display: 'block',
-              fontSize: '0.875rem',
+          {/* Political Metadata Section */}
+          <div style={{
+            backgroundColor: 'var(--sabha-bg-secondary)',
+            borderRadius: 'var(--sabha-radius-lg)',
+            padding: 'var(--sabha-spacing-lg)',
+            border: '1px solid var(--sabha-border-secondary)'
+          }}>
+            <h3 style={{
+              fontSize: '1.125rem',
               fontWeight: '600',
               color: 'var(--sabha-text-primary)',
-              marginBottom: 'var(--sabha-spacing-sm)'
+              marginBottom: 'var(--sabha-spacing-lg)',
+              borderBottom: '2px solid var(--sabha-border-primary)',
+              paddingBottom: 'var(--sabha-spacing-sm)'
             }}>
-              Category *
-            </label>
-            <select
-              required
-              value={formData.categoryId}
-              onChange={(e) => handleInputChange('categoryId', e.target.value)}
-              style={{
-                width: '100%',
-                padding: 'var(--sabha-spacing-md)',
-                borderRadius: 'var(--sabha-radius-lg)',
-                border: '1px solid var(--sabha-border-primary)',
-                backgroundColor: 'var(--sabha-bg-secondary)',
-                color: 'var(--sabha-text-primary)',
-                fontSize: '1rem',
-                outline: 'none',
-                transition: 'var(--sabha-transition-fast)'
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = 'var(--sabha-primary-500)';
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = 'var(--sabha-border-primary)';
-              }}
-            >
-              <option value="">Select a category</option>
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+              Political Context
+            </h3>
+            <div className="space-y-6">
+              {/* Post Type */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: 'var(--sabha-text-primary)',
+                  marginBottom: 'var(--sabha-spacing-sm)'
+                }}>
+                  Post Type *
+                </label>
+                <PostTypeSelector
+                  value={formData.postType}
+                  onChange={(value) => handleInputChange('postType', value)}
+                />
+              </div>
+
+              {/* Priority Level */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: 'var(--sabha-text-primary)',
+                  marginBottom: 'var(--sabha-spacing-sm)'
+                }}>
+                  Priority Level *
+                </label>
+                <PrioritySelector
+                  value={formData.priorityLevel}
+                  onChange={(value) => handleInputChange('priorityLevel', value)}
+                />
+              </div>
+
+              {/* Governance Level */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: 'var(--sabha-text-primary)',
+                  marginBottom: 'var(--sabha-spacing-sm)'
+                }}>
+                  Governance Level *
+                </label>
+                <GovernanceLevelSelector
+                  value={formData.governanceLevel}
+                  onChange={(value) => handleInputChange('governanceLevel', value)}
+                />
+              </div>
+
+              {/* Location */}
+              {(formData.governanceLevel === 'state' || formData.governanceLevel === 'local') && (
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: 'var(--sabha-text-primary)',
+                    marginBottom: 'var(--sabha-spacing-sm)'
+                  }}>
+                    Location {formData.governanceLevel === 'local' ? '*' : ''}
+                  </label>
+                  <LocationSelector
+                    value={formData.location}
+                    onChange={(value) => handleInputChange('location', value)}
+                    governanceLevel={formData.governanceLevel}
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Content */}
@@ -376,7 +413,7 @@ function CreateTopicForm() {
                 }
               }}
             >
-              {isSubmitting ? 'Creating...' : 'Create Topic'}
+              {isSubmitting ? 'Creating...' : 'Create Post'}
             </button>
           </div>
         </form>

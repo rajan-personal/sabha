@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
-import { topic, user, category } from '@/db/schema';
+import { post, user } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 // GET /api/topics/[id] - Fetch a single topic by ID
@@ -11,28 +11,31 @@ export async function GET(
   try {
     const { id: topicId } = await params;
 
-    // Fetch the topic with author and category information
+    // Fetch the topic with author information
     const topics = await db
       .select({
-        id: topic.id,
-        title: topic.title,
-        content: topic.content,
-        authorId: topic.authorId,
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        authorId: post.authorId,
         authorName: user.name,
         authorImage: user.image,
-        categoryId: topic.categoryId,
-        categoryName: category.name,
-        categoryColor: category.color,
-        upvotes: topic.upvotes,
-        downvotes: topic.downvotes,
-        commentCount: topic.commentCount,
-        viewCount: topic.viewCount,
-        createdAt: topic.createdAt,
+        postType: post.postType,
+        priorityLevel: post.priorityLevel,
+        governanceLevel: post.governanceLevel,
+        status: post.status,
+        location: post.location,
+        deadline: post.deadline,
+        officialResponse: post.officialResponse,
+        upvotes: post.upvotes,
+        downvotes: post.downvotes,
+        commentCount: post.commentCount,
+        viewCount: post.viewCount,
+        createdAt: post.createdAt,
       })
-      .from(topic)
-      .leftJoin(user, eq(topic.authorId, user.id))
-      .leftJoin(category, eq(topic.categoryId, category.id))
-      .where(eq(topic.id, topicId));
+      .from(post)
+      .leftJoin(user, eq(post.authorId, user.id))
+      .where(eq(post.id, topicId));
 
     if (topics.length === 0) {
       return NextResponse.json({ error: 'Topic not found' }, { status: 404 });

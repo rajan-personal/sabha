@@ -3,12 +3,10 @@
 import { useSession } from '@/lib/auth-client';
 import { Header } from '@/components/ui/Header';
 import { TopicList } from '@/components/forum/TopicList';
-import { CategoryFilter } from '@/components/forum/CategoryFilter';
 import { CreateTopicButton } from '@/components/forum/CreateTopicButton';
 import { useState } from 'react';
 
 export default function Home() {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
@@ -20,8 +18,6 @@ export default function Home() {
         <Header />
 
         <HomeContent 
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
@@ -31,13 +27,9 @@ export default function Home() {
 }
 
 function HomeContent({
-  selectedCategory,
-  setSelectedCategory,
   searchQuery,
   setSearchQuery
 }: {
-  selectedCategory: string | null;
-  setSelectedCategory: (category: string | null) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
 }) {
@@ -54,12 +46,12 @@ function HomeContent({
               color: 'var(--sabha-text-primary)',
               marginBottom: 'var(--sabha-spacing-sm)'
             }}>
-              Community Forum
+              Political Engagement Platform
             </h1>
             <p style={{ color: 'var(--sabha-text-secondary)' }}>
               {session 
-                ? "Discover and discuss various topics with the community"
-                : "Explore topics and join the discussion by signing in"
+                ? "Share issues, provide feedback, and suggest improvements for governance at all levels"
+                : "Explore political discussions and civic engagement by signing in"
               }
             </p>
           </div>
@@ -67,12 +59,12 @@ function HomeContent({
           {session && <CreateTopicButton />}
         </div>
 
-        {/* Search and Filter Bar */}
+        {/* Search Bar */}
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="flex-1">
             <input
               type="text"
-              placeholder="Search topics..."
+              placeholder="Search issues, feedback, and suggestions..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -94,18 +86,11 @@ function HomeContent({
               }}
             />
           </div>
-          <div className="md:w-64">
-            <CategoryFilter 
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-            />
-          </div>
         </div>
       </div>
 
       {/* Topics List */}
       <TopicList 
-        selectedCategory={selectedCategory}
         searchQuery={searchQuery}
       />
     </>

@@ -1,4 +1,12 @@
-import { pgTable, text, timestamp, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer, pgEnum } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+
+// Political platform enums
+export const postTypeEnum = pgEnum('post_type', ['issue', 'feedback', 'suggestion']);
+export const priorityLevelEnum = pgEnum('priority_level', ['low', 'medium', 'high']);
+export const governanceLevelEnum = pgEnum('governance_level', ['national', 'state', 'local']);
+export const postStatusEnum = pgEnum('post_status', ['open', 'in_review', 'acknowledged', 'resolved', 'rejected']);
+export const reactionTypeEnum = pgEnum('reaction_type', ['like', 'dislike', 'love', 'angry', 'sad', 'laugh', 'upvote', 'downvote']);
 
 export const user = pgTable("user", {
 	id: text('id').primaryKey(),
@@ -57,12 +65,22 @@ export const category = pgTable("category", {
 	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
 });
 
-export const topic = pgTable("topic", {
+export const post = pgTable("post", {
 	id: text('id').primaryKey(),
 	title: text('title').notNull(),
 	content: text('content').notNull(),
 	authorId: text('author_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
-	categoryId: text('category_id').references(() => category.id),
+	
+	// Political features
+	postType: postTypeEnum('post_type').notNull(),
+	priorityLevel: priorityLevelEnum('priority_level').default('medium').notNull(),
+	governanceLevel: governanceLevelEnum('governance_level').notNull(),
+	status: postStatusEnum('status').default('open').notNull(),
+	location: text('location'), // For local/city level posts
+	deadline: timestamp('deadline'), // For time-sensitive posts
+	officialResponse: text('official_response'), // Government response
+	
+	// Existing fields
 	upvotes: integer('upvotes').$defaultFn(() => 0).notNull(),
 	downvotes: integer('downvotes').$defaultFn(() => 0).notNull(),
 	commentCount: integer('comment_count').$defaultFn(() => 0).notNull(),
@@ -75,7 +93,7 @@ export const comment = pgTable("comment", {
 	id: text('id').primaryKey(),
 	content: text('content').notNull(),
 	authorId: text('author_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
-	topicId: text('topic_id').notNull().references(() => topic.id, { onDelete: 'cascade' }),
+	postId: text('post_id').notNull().references(() => post.id, { onDelete: 'cascade' }),
 	parentId: text('parent_id'), // for nested comments
 	upvotes: integer('upvotes').$defaultFn(() => 0).notNull(),
 	downvotes: integer('downvotes').$defaultFn(() => 0).notNull(),
@@ -86,7 +104,7 @@ export const comment = pgTable("comment", {
 export const vote = pgTable("vote", {
 	id: text('id').primaryKey(),
 	userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
-	topicId: text('topic_id').references(() => topic.id, { onDelete: 'cascade' }),
+	postId: text('post_id').references(() => post.id, { onDelete: 'cascade' }),
 	commentId: text('comment_id').references(() => comment.id, { onDelete: 'cascade' }),
 	type: text('type').notNull(), // 'upvote' or 'downvote'
 	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
@@ -101,6 +119,98 @@ export const userProfile = pgTable("user_profile", {
 	website: text('website'),
 	totalTopics: integer('total_topics').$defaultFn(() => 0).notNull(),
 	totalComments: integer('total_comments').$defaultFn(() => 0).notNull(),
+	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
+});
+
+// New political tables
+export const officialTag = pgTable("official_tag", {
+	id: text('id').primaryKey(),
+	name: text('name').notNull(),
+	title: text('title').notNull(), // Official title/position
+	organization: text('organization').notNull(), // Government department/ministry
+	governanceLevel: governanceLevelEnum('governance_level').notNull(),
+	location: text('location'), // State/city for local officials
+	twitterHandle: text('twitter_handle'),
+	isVerified: boolean('is_verified').$defaultFn(() => false).notNull(),
+	verifiedAt: timestamp('verified_at'),
+	verifiedBy: text('verified_by').references(() => user.id),
+	email: text('email'),
+	phone: text('phone'),
+	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
+});
+
+export const postTag = pgTable("post_tag", {
+	id: text('id').primaryKey(),
+	postId: text('post_id').notNull().references(() => post.id, { onDelete: 'cascade' }),
+	officialTagId: text('official_tag_id').references(() => officialTag.id, { onDelete: 'cascade' }),
+	customTag: text('custom_tag'), // For non-official tags
+	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
+});
+
+export const attachment = pgTable("attachment", {
+	id: text('id').primaryKey(),
+	postId: text('post_id').references(() => post.id, { onDelete: 'cascade' }),
+	commentId: text('comment_id').references(() => comment.id, { onDelete: 'cascade' }),
+	fileName: text('file_name').notNull(),
+	originalName: text('original_name').notNull(),
+	fileSize: integer('file_size').notNull(),
+	mimeType: text('mime_type').notNull(),
+	fileUrl: text('file_url').notNull(),
+	isVerified: boolean('is_verified').$defaultFn(() => false).notNull(),
+	verifiedAt: timestamp('verified_at'),
+	verifiedBy: text('verified_by').references(() => user.id),
+	uploadedBy: text('uploaded_by').notNull().references(() => user.id, { onDelete: 'cascade' }),
+	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
+});
+
+export const reaction = pgTable("reaction", {
+	id: text('id').primaryKey(),
+	userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+	postId: text('post_id').references(() => post.id, { onDelete: 'cascade' }),
+	commentId: text('comment_id').references(() => comment.id, { onDelete: 'cascade' }),
+	type: reactionTypeEnum('type').notNull(),
+	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
+});
+
+export const notification = pgTable("notification", {
+	id: text('id').primaryKey(),
+	userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+	type: text('type').notNull(), // 'tag', 'response', 'status_change', 'deadline'
+	title: text('title').notNull(),
+	message: text('message').notNull(),
+	postId: text('post_id').references(() => post.id, { onDelete: 'cascade' }),
+	commentId: text('comment_id').references(() => comment.id, { onDelete: 'cascade' }),
+	isRead: boolean('is_read').$defaultFn(() => false).notNull(),
+	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+	readAt: timestamp('read_at')
+});
+
+// Backward compatibility - export post as topic for existing code
+export const topic = post;
+
+// Location management tables
+export const state = pgTable("state", {
+	id: text('id').primaryKey().default(sql`gen_random_uuid()`),
+	name: text('name').notNull().unique(),
+	code: text('code').notNull().unique(), // State code like 'UP', 'MH', etc.
+	type: text('type').notNull(), // 'state' or 'ut' (Union Territory)
+	isActive: boolean('is_active').$defaultFn(() => true).notNull(),
+	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
+});
+
+export const city = pgTable("city", {
+	id: text('id').primaryKey().default(sql`gen_random_uuid()`),
+	name: text('name').notNull(),
+	stateId: text('state_id').notNull().references(() => state.id, { onDelete: 'cascade' }),
+	type: text('type').notNull(), // 'metropolitan', 'city', 'district', 'municipality', 'town'
+	population: integer('population'), // Optional population data
+	isCapital: boolean('is_capital').$defaultFn(() => false).notNull(),
+	isActive: boolean('is_active').$defaultFn(() => true).notNull(),
 	createdAt: timestamp('created_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
 	updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date()).notNull()
 });
